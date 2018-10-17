@@ -26,80 +26,105 @@ def world_avg_ping(world_number, n_tests=5):
     assert(type(n_tests) == int), "Number of tests not an integer."
     assert(n_tests > 1), "The number of tests has to be greater than one."
 
-    # Create the ping command to send to the terminal - note that the repeat command is different on Windows and Unix
-    # based operating systems
+    # Create the ping command to send to the terminal - note that the repeat
+    # command is different on Windows and Unix based operating systems
+    OS = system().lower()
     hostname = "oldschool{}.runescape.com".format(world_number)
-    if system().lower == "windows":
-      repeat = "-n {}".format(n_tests)
-    else:
-      repeat = "-c {}".format(n_tests)
+    if OS == "windows":
+        repeat = "-n {}".format(n_tests)
+    elif OS == "darwin" or OS == "linux":
+        repeat = "-c {}".format(n_tests)
     ping_command = "ping {} {}".format(repeat, hostname)
 
-    print("Pinging: {} {}".format(repeat, hostname))
+    print("{}".format(ping_command))
 
-    # Now send the ping command to the terminal and capture stdout and stderr, then decode the bytes string into UTF-8
-    # and split the list
+    # Now send the ping command to the terminal and capture stdout and stderr,
+    # then decode the bytes string into UTF-8 and split the list
     ping = Popen(ping_command, stdout=PIPE, stderr=PIPE, shell=True)
     stdout, stderr = ping.communicate()
     stdout_split = stdout.decode("utf-8").split()
 
-    # Now we need to find where the average latency is output - note that this is different between Windows and Unix
-    # based operating systems again
-    if system().lower == 'windows':
+    # Now we need to find where the average latency is output - note that this
+    # is different between Windows and Unix based operating systems again
+    if OS == 'windows':
         if stdout[-1] == b'loss),':
             avg_latency = 999
         else:
             avg_latency = int(''.join(findall(r'\d', str(stdout[-1]))))
-    else:
+    elif OS == "darwin" or OS == "linux":
         avg_ping_idx = -1
         for i in range(len(stdout_split)):
-            if stdout_split[i] == "min/avg/max/stddev":  # When we find this, the time is 2 entries next
+            if stdout_split[i] == "min/avg/max/stddev":
                 avg_ping_idx = i + 2
                 break
         if avg_ping_idx == -1:
-            raise IndexError("Couldn't find average latency for {}".format(hostname))
+            raise IndexError("Couldn't find average latency for {}"
+                             .format(hostname))
         avg_latency = stdout_split[avg_ping_idx].replace("/", " ").split()[1]
 
     return avg_latency
 
 
 def main():
-    n_args = len(argv)
-    if argv[1] == 'uk':
-        print('Pinging all non-PvP UK worlds.')
-        worlds = [2, 9, 10, 17, 18, 33, 34, 41, 42, 49, 50, 58, 65, 66, 73]
-    elif argv[1] == 'allworlds':
-        print('Pinging all the worlds.')
-        worlds = range(1, 95)
-    elif argv[1] == 'custom':
-        print('List the worlds separated by a space, e.g. 1 12 42')
-        custom_worlds = input('Worlds: ')
-        worlds = [int(i) for i in custom_worlds.split()]
-    else:
-        print('Bad world section. Exciting script.')
-        print('Acceptable worlds are: uk, allworlds and custom.')
-        raise ValueError()
+    """
+    The main control function
 
-    if n_args == 2:
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
+
+    n_args = len(argv)
+
+    if n_args >= 2:
         n_tests = 5
-        print('Number of ping tests not provided. Using default value: {}.'.format(n_tests))
-    else:
+        world_type = argv[1].lower()
+        if world_type == "uk":
+            print("Pinging all of the non-PvP UK worlds")
+            worlds = [2, 9, 10, 17, 18, 33, 34, 41, 42, 49, 50, 58, 65, 66, 73]
+        elif world_type == "allworlds":
+            print("Pinging all of the RuneScape worlds")
+            worlds = range(1, 125)
+        elif world_type == "custom":
+            print("List the worlds wanted to be pinged separated by a space, e.g. 1 12 42")
+            custom_worlds = input("Worlds: ")
+            worlds = [int(i) for i in custom_worlds.split()]
+        elif world_type.isdigit() is True:
+            worlds = [int(argv[1])]
+        else:
+            raise ValueError("\n\nBAD WORLD SELECTION!\nAcceptable choices are: uk, allworlds, custom or a single world number.")
+        print("Using default n_tests value: {}".format(n_tests))
+
+    if n_args >= 3:
         n_tests = int(argv[2])
 
-    if (n_tests > 5):
-        print ("Pinging each world {} times, this may take a while.".format(n_tests))
+    if n_tests > 5:
+        print("Pinging each world {} times, this may take a while.."
+              .format(n_tests))
+
+    print("")
+
+    # Now iterate through each world and run the ping test
     pings = []
     for world in worlds:
         world_ping = world_avg_ping(world, n_tests)
         pings.append("World {}".format(world))
         pings.append(world_ping)
 
-    # The latency is index 1, 3, 5, ... etc and 0, 2, 4, .. etc is the world number
+    # Now figure out which world had the lowest ping
+    # The latency is index 1, 3, 5, ... etc and 0, 2, 4, .. etc is the
+    # world number
     lowest_ping = min(pings[1::2])
     lowest_ping_world_number = pings[pings.index(lowest_ping) - 1]
-    print('\nLowest ping:\n{} {} ms'.format(lowest_ping_world_number, lowest_ping))
+    print('\nLowest ping:\n{} {} ms'.format(lowest_ping_world_number,
+          lowest_ping))
 
-    return
+    return None
+
 
 if __name__ == '__main__':
     main()

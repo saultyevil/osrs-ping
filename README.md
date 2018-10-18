@@ -1,16 +1,18 @@
-# OldSchool Runescape Ping Check
+# OldSchool Runescape Ping 
 
-A Python script used to ping OldSchool RuneScape worlds. Only works on Windows
-right now!!!
+A Python script used to ping OldSchool RuneScape worlds. Currently works on Unix and Unix-like
+operating systems, but doesn't currently work on Windows. Windows support will be added when
+I can get onto a Windows based machine!
 
 ## Usage
 
-python osrs-ping.py -choice_of_words -n_tests
+python osrs-ping.py [-h] world_list [n_tests]
 
-Currently the accepetable choices of worlds is:
+Currently, the allowed choice for world_list is:
 
 * uk
 * allworlds
-* custom
+* custom_list
+* an integer for a single world
 
-If the number of tests is not provided, it will default to 1.
+If the n_tests is not provided, it will default to n_tests = 5.

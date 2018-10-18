@@ -110,14 +110,14 @@ def parse_world_tests_args():
     elif world_type == "allworlds":
         print("Pinging all of the RuneScape worlds:")
         worlds = range(1, 125)
-    elif world_type == "custom":
+    elif world_type == "custom_list":
         print("List the worlds wanted to be pinged separated by a space, e.g. 1 12 42:")
         custom_worlds = input("World choices > ")
         worlds = [int(i) for i in custom_worlds.split()]
     elif world_type.isdigit() is True:
         worlds = [int(world_type)]
     else:
-        world_types_choices = ["uk", "allworlds", "custom", "world_number (an integer number)"]
+        world_types_choices = ["uk", "allworlds", "custom_list", "an integer for a single world"]
         raise ValueError("Disallowed values for world choice. Allowed values are:\n\t{}".format(world_types_choices))
     n_worlds = len(worlds)
 

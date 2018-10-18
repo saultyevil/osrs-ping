@@ -71,7 +71,8 @@ def avg_world_ping(world_number, n_tests):
     elif OS == "darwin" or OS == "linux":
         avg_ping_idx = -1
         for i in range(len(stdout_split)):
-            if stdout_split[i] == "min/avg/max/stddev":
+            out = stdout_split[i]
+            if out == "min/avg/max/stddev" or "min/avg/max/mdev":
                 avg_ping_idx = i + 2
                 break
         if avg_ping_idx == -1:

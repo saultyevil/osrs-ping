@@ -67,7 +67,7 @@ def avg_world_ping(world_number, n_tests):
     if OS == 'windows':
         exit_msg = "Windows ins't implemented anymore, but will be soon tm :^)"
         print(exit_msg)
-        return 999, exit()
+        return 999, exit_msg
     elif OS == "darwin" or OS == "linux":
         avg_ping_idx = -1
         for i in range(len(stdout_split)):

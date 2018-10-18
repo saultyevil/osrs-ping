@@ -72,7 +72,7 @@ def avg_world_ping(world_number, n_tests):
         avg_ping_idx = -1
         for i in range(len(stdout_split)):
             out = stdout_split[i]
-            if out == "min/avg/max/stddev" or "min/avg/max/mdev":
+            if out == "min/avg/max/stddev" or out == "min/avg/max/mdev":
                 avg_ping_idx = i + 2
                 break
         if avg_ping_idx == -1:

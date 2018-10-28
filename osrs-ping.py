@@ -64,12 +64,17 @@ def avg_world_ping(world_number, n_tests):
 
     # Now we need to find where the average latency is output - note that this
     # is different between Windows and Unix based operating systems again
+    avg_ping_idx = -1
     if OS == 'windows':
-        exit_msg = "Windows ins't implemented anymore, but will be soon tm :^)"
-        print(exit_msg)
-        return 999, exit_msg
+        for i in range(len(stdout_split)):
+            out = stdout_split[i]
+            if out == "Average":
+                avg_ping_idx = i + 2
+                break
+        if avg_ping_idx == -1:
+            raise IndexError("Couldn't find average latency for {}".format(hostname))
+        avg_latency = stdout_split[avg_ping_idx]
     elif OS == "darwin" or OS == "linux":
-        avg_ping_idx = -1
         for i in range(len(stdout_split)):
             out = stdout_split[i]
             if out == "min/avg/max/stddev" or out == "min/avg/max/mdev":
@@ -78,6 +83,7 @@ def avg_world_ping(world_number, n_tests):
         if avg_ping_idx == -1:
             raise IndexError("Couldn't find average latency for {}".format(hostname))
         avg_latency = stdout_split[avg_ping_idx].replace("/", " ").split()[1]
+
     exit_msg = "successful exit"
 
     return avg_latency, exit_msg

@@ -1,8 +1,6 @@
 # OldSchool Runescape Ping 
 
-A Python script used to ping OldSchool RuneScape worlds. Currently works on macOS 
-and Linux (?) operating systems, but doesn't currently work on Windows. Windows 
-support will be added at a later date!
+A Python script used to ping OldSchool RuneScape worlds. Should work on MacOS, Linux and Windows (10)!
 
 ## Usage
 
